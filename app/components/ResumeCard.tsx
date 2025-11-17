@@ -5,18 +5,27 @@ import {usePuterStore} from "~/lib/puter";
 
 const ResumeCard = ({ resume: { id, companyName, jobTitle, feedback, imagePath } }: { resume: Resume }) => {
     const { fs } = usePuterStore();
-    const [resumeUrl, setResumeUrl] = useState('');
+    const [resumeUrl, setResumeUrl] = useState("");
 
     useEffect(() => {
         const loadResume = async () => {
-            const blob = await fs.read(imagePath);
-            if(!blob) return;
-            let url = URL.createObjectURL(blob);
-            setResumeUrl(url);
-        }
+            if (!imagePath) return;
 
-        loadResume();
-    }, [imagePath]);
+            try {
+                const blob = await fs.read(imagePath);
+                if (!blob) return;
+
+                const url = URL.createObjectURL(blob);
+                setResumeUrl(url);
+            } catch (err) {
+                // If the image file no longer exists in Puter (404),
+                // fail gracefully and just render the card without a preview.
+                console.error("Failed to load resume preview image", err);
+            }
+        };
+
+        void loadResume();
+    }, [fs, imagePath]);
 
     return (
         <Link to={`/resume/${id}`} className="resume-card animate-in fade-in duration-1000">
@@ -40,8 +49,8 @@ const ResumeCard = ({ resume: { id, companyName, jobTitle, feedback, imagePath }
                         />
                     </div>
                 </div>
-                )}
+            )}
         </Link>
-    )
-}
-export default ResumeCard
+    );
+};
+export default ResumeCard;

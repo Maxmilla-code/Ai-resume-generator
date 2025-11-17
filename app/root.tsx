@@ -29,7 +29,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const { init } = usePuterStore();
 
   useEffect(() => {
-    init()
+    init();
   }, [init]);
 
   return (
@@ -48,6 +48,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Scripts />
       </body>
     </html>
+  );
+}
+
+export function HydrateFallback() {
+  // Used by React Router when loading JS modules / client loaders
+  // so users see a friendly loading state instead of a blank screen.
+  return (
+    <main className="min-h-screen flex items-center justify-center bg-[url('/images/bg-main.svg')] bg-cover">
+      <p className="text-lg text-gray-700 font-medium">Loading Scanara...</p>
+    </main>
   );
 }
 
